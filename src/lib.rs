@@ -7,8 +7,11 @@ pub struct Synthesizer {
 
 impl Synthesizer {
     /// Initialize a new synthesizer.
+    ///
     /// This is NOT cheap to call, expect multiple seconds of delay.
     /// It is advised to make one synthesizer and keep it for the duration of your program.
+
+    // TODO! Add a debug mode.
     pub fn new(model_name: &str) -> Result<Self, PyErr> {
         Python::with_gil(|py| {
             let locals = PyDict::new(py);
@@ -69,6 +72,7 @@ tts = TTS(model_name=model_name, progress_bar=False, gpu=True)
 
 fn filter_string_input(mut string_input: String) -> String {
     string_input = replace_problematic_words(string_input);
+    string_input = replace_external_quotes(string_input);
 
     let mut input_chars: Vec<char> = string_input.chars().collect();
 
@@ -83,7 +87,6 @@ fn filter_string_input(mut string_input: String) -> String {
         return String::new();
     }
 
-    // TODO! Work out how to handle a pause before speech.
     const WHITELISTED_CHARS: [char; 48] = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
@@ -99,10 +102,34 @@ fn filter_string_input(mut string_input: String) -> String {
     string_input.replace('\x00', "")
 }
 
-fn replace_problematic_words(string_input: String) -> String{
+fn replace_external_quotes(string_input: String) -> String {
+    // This function removes all external quotes from the text while preserving contractions.
+    let mut input_chars: Vec<char> = string_input.chars().collect();
+
+    for i in 0..input_chars.len() {
+        if i == 0 || i == input_chars.len() - 1 {
+            input_chars[i] = '\x00';
+        } else if input_chars[i] == '\x27' {
+            if !input_chars[i - 1].is_ascii_alphabetic()
+                && !input_chars[i + 1].is_ascii_alphabetic()
+            {
+                input_chars[i] = '\x00';
+            }
+        }
+    }
+
+    let string_input: String = input_chars.into_iter().collect();
+    string_input.replace('\x00', "")
+}
+
+fn replace_problematic_words(string_input: String) -> String {
+    // This function replaces words and symbols the TTS struggles with with crap that it should struggle with less.
     let mut string_input = string_input.to_lowercase();
-    const REPLACEMENT_MAP: [[&str; 2]; 2] = [ // A map of replacement words and unusual symbols TTS tends to struggle with.
-        ["’", "'"], ["doesn't", "does not"]];
+    const REPLACEMENT_MAP: [[&str; 2]; 2] = [
+        // A map of replacement words and unusual symbols TTS tends to struggle with.
+        ["’", "'"],
+        ["doesn't", "does not"],
+    ];
 
     for replacement in REPLACEMENT_MAP {
         string_input = string_input.replace(replacement[0], replacement[1]);
