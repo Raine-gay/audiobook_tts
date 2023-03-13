@@ -67,7 +67,9 @@ tts = TTS(model_name=model_name, progress_bar=False, gpu=True)
     }
 }
 
-fn filter_string_input(string_input: String) -> String {
+fn filter_string_input(mut string_input: String) -> String {
+    string_input = replace_problematic_words(string_input);
+
     let mut input_chars: Vec<char> = string_input.chars().collect();
 
     let mut contains_alphanumeric = false; // This checks if the string contains any alphanumerics.
@@ -85,7 +87,7 @@ fn filter_string_input(string_input: String) -> String {
     const WHITELISTED_CHARS: [char; 48] = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-        '$', '£', '!', '.', '?', ',', '\x27', '&', ';', ':', ' ', '-'
+        '$', '£', '!', '.', '?', ',', '\x27', '&', ';', ':', ' ', '-',
     ];
     for i in 0..input_chars.len() {
         if !WHITELISTED_CHARS.contains(&input_chars[i].to_ascii_lowercase()) {
@@ -95,4 +97,15 @@ fn filter_string_input(string_input: String) -> String {
 
     let string_input: String = input_chars.into_iter().collect();
     string_input.replace('\x00', "")
+}
+
+fn replace_problematic_words(mut string_input: String) -> String{
+    const REPLACEMENT_MAP: [[&str; 2]; 1] = [ // A map of replacement words and unusual symbols TTS tends to struggle with.
+        ["’", "'"]];
+
+    for replacement in REPLACEMENT_MAP {
+        string_input = string_input.replace(replacement[0], replacement[1]);
+    }
+
+    string_input
 }
