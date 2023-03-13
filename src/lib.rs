@@ -99,7 +99,8 @@ fn filter_string_input(mut string_input: String) -> String {
     string_input.replace('\x00', "")
 }
 
-fn replace_problematic_words(mut string_input: String) -> String{
+fn replace_problematic_words(string_input: String) -> String{
+    let mut string_input = string_input.to_lowercase();
     const REPLACEMENT_MAP: [[&str; 2]; 2] = [ // A map of replacement words and unusual symbols TTS tends to struggle with.
         ["’", "'"], ["doesn't", "does not"]];
 
