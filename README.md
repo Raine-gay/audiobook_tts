@@ -1,7 +1,7 @@
 Instructions:
 
-It is highly recommend you use this in conjunction with: https://github.com/Raine-gay/coqui-ai-TTS (A fork of coqui-ai TTS) In a virtualenv.\\
+It is highly recommend you use this in conjunction with: https://github.com/coqui-ai/TTS\\
 
 python -m venv *envname*\
 source *envname*/bin/activate\
-pip install pip install git+https://github.com/Raine-gay/coqui-ai-TTS\
+pip install pip install git+https://github.com/coqui-ai/TTS
