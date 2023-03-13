@@ -100,8 +100,8 @@ fn filter_string_input(mut string_input: String) -> String {
 }
 
 fn replace_problematic_words(mut string_input: String) -> String{
-    const REPLACEMENT_MAP: [[&str; 2]; 1] = [ // A map of replacement words and unusual symbols TTS tends to struggle with.
-        ["’", "'"]];
+    const REPLACEMENT_MAP: [[&str; 2]; 2] = [ // A map of replacement words and unusual symbols TTS tends to struggle with.
+        ["’", "'"], ["doesn't", "does not"]];
 
     for replacement in REPLACEMENT_MAP {
         string_input = string_input.replace(replacement[0], replacement[1]);
