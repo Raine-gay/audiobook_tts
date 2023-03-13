@@ -70,7 +70,7 @@ tts = TTS(model_name=model_name, progress_bar=False, gpu=True)
 fn filter_string_input(string_input: String) -> String {
     let mut input_chars: Vec<char> = string_input.chars().collect();
 
-    let mut contains_alphanumeric = false; // This checks
+    let mut contains_alphanumeric = false; // This checks if the string contains any alphanumerics.
     for char in &input_chars {
         if char.is_ascii_alphanumeric() {
             contains_alphanumeric = true;
@@ -81,6 +81,7 @@ fn filter_string_input(string_input: String) -> String {
         return String::new();
     }
 
+    // TODO! Work out how to handle a pause before speech.
     const WHITELISTED_CHARS: [char; 48] = [
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
