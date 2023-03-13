@@ -38,7 +38,7 @@ tts = TTS(model_name=model_name, progress_bar=False, gpu=True)
     ///
     /// Use the filter input bool if you wish for this crate to attempt to remove junk from the input.
     /// It is recommend to use this feature as junk in the input can cause the TTS generator to crash.
-    /// Please note: That this feature hasn't been tested and so could have a lil bit of unintended behavior.
+    /// Please note: That this feature hasn't been stringently tested and so could have a lil bit of unintended behavior.
     pub fn generate(
         &mut self,
         string_input: &str,
