@@ -10,19 +10,21 @@ impl Synthesizer {
     ///
     /// This is NOT cheap to call, expect multiple seconds of delay.
     /// It is advised to make one synthesizer and keep it for the duration of your program.
-
-    // TODO! Add a debug mode.
-    pub fn new(model_name: &str) -> Result<Self, PyErr> {
+    /// 
+    /// Set display_debug to true in order to see the Coqui AI output.
+    pub fn new(model_name: &str, display_debug: bool) -> Result<Self, PyErr> {
         Python::with_gil(|py| {
             let locals = PyDict::new(py);
             locals.set_item("model_name", model_name).unwrap();
+            locals.set_item("display_debug", display_debug).unwrap();
             let locals: Py<PyDict> = locals.into();
 
             match py.run(
                 r#"
 import os
 import sys
-sys.stdout = open(os.devnull, 'w')
+if not display_debug:
+    sys.stdout = open(os.devnull, 'w')
 # Send the stdout to the void.
 
 from TTS.api import TTS
