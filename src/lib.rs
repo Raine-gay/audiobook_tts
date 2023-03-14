@@ -10,7 +10,7 @@ impl Synthesizer {
     ///
     /// This is NOT cheap to call, expect multiple seconds of delay.
     /// It is advised to make one synthesizer and keep it for the duration of your program.
-    /// 
+    ///
     /// Set display_debug to true in order to see the Coqui AI output.
     pub fn new(model_name: &str, display_debug: bool) -> Result<Self, PyErr> {
         Python::with_gil(|py| {
@@ -104,16 +104,17 @@ fn filter_string_input(mut string_input: String) -> String {
     string_input.replace('\x00', "")
 }
 
+#[rustfmt::skip]
 fn replace_external_quotes(string_input: String) -> String {
     // This function removes all external quotes from the text while preserving contractions.
     let mut input_chars: Vec<char> = string_input.chars().collect();
-
+    
     for i in 0..input_chars.len() {
-        if i == 0 || i == input_chars.len() - 1 {
-            input_chars[i] = '\x00';
-        } else if input_chars[i] == '\x27' {
-            if !input_chars[i - 1].is_ascii_alphabetic()
-                && !input_chars[i + 1].is_ascii_alphabetic()
+        if input_chars[i] == '\x27' {
+            if i == 0 || i == input_chars.len() - 1 {
+                input_chars[i] = '\x00';
+            } else if !input_chars[i - 1].is_ascii_alphabetic()
+                   && !input_chars[i + 1].is_ascii_alphabetic()
             // Check if the chars either side of the index are not ascii_alphabetic.
             {
                 input_chars[i] = '\x00';
@@ -139,4 +140,18 @@ fn replace_problematic_words(mut string_input: String) -> String {
     }
 
     string_input
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn filter_test_one() {
+        let string_input = "'The quick brown fox, 'Jumps over the lazy dog.' It does this because it want's to get ice-cream.";
+        assert_eq!(
+            filter_string_input(string_input.to_string()),
+            "The quick brown fox, 'Jumps over the lazy dog. It does this because it want's to get ice-cream."
+        )
+    }
 }
