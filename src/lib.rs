@@ -112,6 +112,7 @@ fn replace_external_quotes(string_input: String) -> String {
         } else if input_chars[i] == '\x27' {
             if !input_chars[i - 1].is_ascii_alphabetic()
                 && !input_chars[i + 1].is_ascii_alphabetic()
+            // Check if the chars either side of the index are not ascii_alphabetic.
             {
                 input_chars[i] = '\x00';
             }
@@ -122,13 +123,13 @@ fn replace_external_quotes(string_input: String) -> String {
     string_input.replace('\x00', "")
 }
 
-fn replace_problematic_words(string_input: String) -> String {
+fn replace_problematic_words(mut string_input: String) -> String {
     // This function replaces words and symbols the TTS struggles with with crap that it should struggle with less.
-    let mut string_input = string_input.to_lowercase();
-    const REPLACEMENT_MAP: [[&str; 2]; 2] = [
+
+    // TODO! Make this replacement function preserve case.
+    const REPLACEMENT_MAP: [[&str; 2]; 1] = [
         // A map of replacement words and unusual symbols TTS tends to struggle with.
         ["’", "'"],
-        ["doesn't", "does not"],
     ];
 
     for replacement in REPLACEMENT_MAP {
